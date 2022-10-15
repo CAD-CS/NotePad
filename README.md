@@ -2,8 +2,8 @@
 
 ### NotePad Re-imagined
 
-The name of the project that I have decided to pursue is called ***Notepad Squared***. 
-Notepad Squared is intended to be an improvement of Microsoft's *Notepad* 
+The name of the project that I have decided to pursue is called ***VimPad***. 
+VimPad is intended to be an improvement of Microsoft's *Notepad* 
 with features that will make it feel like an actual notepad. I will also try to implement the text input method of 
 Bram Moolenaar's Vi Improved (a.k.a. *Vim*) but on professor Wolfman's advice, 
 I will implement it at the end if I have time.
@@ -32,6 +32,6 @@ create dictionaries or grammar guides for myself.
 ### User Stories
 
 1. As a user, I would like to create a new **Note** and add it to an existing **Pad**
-2. As a user, I would like to select an existing **Note** from a **Pad** and modify it
+2. As a user, I would like to select an existing **Note** from a **Pad** and modify its contents
 3. As a user, I would like to remove an existing **Note** from a **Pad**
-4. As a user, I would like to add a title to my **Note**
+4. As a user, I would like to have multiple **Pads**

@@ -5,7 +5,7 @@ public class Note {
     private String noteTitle;
     private String text;
 
-    // REQUIRES: String not be empty
+    // REQUIRES: No pre-existing note with same name
     // MODIFIES: this
     // EFFECTS: creates a note with a title but with zero text (blank canvas)
     public Note(String title) {
@@ -22,17 +22,17 @@ public class Note {
         return text;
     }
 
-    // REQUIRES: String not be empty
+    // REQUIRES: title cannot be that of a pre-existing one
     // MODIFIES: this
     // EFFECTS: Changes the title of the note
     public void changeNoteTitle(String newTitle) {
-        //stub
+        this.noteTitle = newTitle;
+
     }
 
-    // REQUIRES: String not be empty
     // MODIFIES: this
-    // EFFECTS: Modifies text
-    public void modifyText(String newText) {
-        //stub
+    // EFFECTS: Changes the text of the note to the inputted text
+    public void changeNoteText(String newText) {
+        this.text = newText;
     }
 }
