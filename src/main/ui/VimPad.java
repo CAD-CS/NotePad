@@ -36,6 +36,7 @@ public class VimPad {
         initialize();
         displayCommands();
         while (run) {
+            System.out.println("\nEnter: \n");
             this.input = userInput.nextLine();
             System.out.println("************* \n");
             processMain(input);
@@ -78,37 +79,55 @@ public class VimPad {
         System.out.println("\t Display note text = t");
     }
 
-    @SuppressWarnings("methodlength")
     // REQUIRES: A valid input from the list [n,p,rp,rn,sn,sp,q,d,m,a]
     // Modifies: this
     // EFFECTS: processes command based on input and calls more specific method to deal with subclass of input
     private void processMain(String cmd) {
-        if (cmd.equals("n") || cmd.equals("p")) {
-            processNew(cmd);
-        } else if (cmd.equals("rn") || cmd.equals("rp")) {
-            processRemove(cmd);
+        if (cmd.equals("n") || cmd.equals("p") || cmd.equals("rn") || cmd.equals("rp")) {
+            processNewAndRemove(cmd);
         } else if (cmd.equals("sn") || cmd.equals("sp")) {
             processSelect(cmd);
+        } else if (cmd.equals("a") || cmd.equals("m")) {
+            processAddAndModify(cmd);
         } else {
-            switch (cmd) {
-                case "q":
-                    this.run = false;
-                    break;
-                case "d":
-                    displayCommands();
-                    break;
-                case "a":
-                    processAdd();
-                    break;
-                case "m":
-                    processModify();
-                    break;
-                case "t":
-                    System.out.println(this.selectedNote.getText() + "\n");
-                    break;
-                default:
-                    System.out.println("Invalid input");
-            }
+            processMisc(cmd);
+        }
+    }
+
+    // REQUIRES: cmd be one of p,n,rp,rn
+    // EFFECTS: this
+    // MODIFIES: calls processNew if n or p, or processRemove if rp or rn
+    private void processNewAndRemove(String cmd) {
+        if (cmd.equals("n") || cmd.equals("p")) {
+            processNew(cmd);
+        } else {
+            processRemove(cmd);
+        }
+    }
+
+    // REQUIRES: cmd be one of q, d,t
+    // EFFECTS: this
+    // MODIFIES: calls processAdd if a, or processModify m
+    private void processMisc(String cmd) {
+        if (cmd.equals("q")) {
+            this.run = false;
+        } else if (cmd.equals("d")) {
+            displayCommands();
+        } else if (cmd.equals("t")) {
+            System.out.println(this.selectedNote.getText() + "\n");
+        } else {
+            System.out.println("Invalid input");
+        }
+    }
+
+    // REQUIRES: cmd be one of a or m
+    // EFFECTS: this
+    // MODIFIES: calls processAdd if a, or processModify m
+    private void processAddAndModify(String cmd) {
+        if (cmd.equals("a")) {
+            processAdd();
+        } else {
+            processModify();
         }
     }
 
@@ -210,7 +229,7 @@ public class VimPad {
     }
 
     // EFFECTS: displays current selected items, and list of pad
-    public void displayInventory() {
+    private void displayInventory() {
         System.out.println("\n--Selected Pad-- " + this.selectedPad.getPadTitle());
         System.out.println("--Selected Note-- " + this.selectedNote.getNoteTitle());
         System.out.println("--List of pads-- ");
