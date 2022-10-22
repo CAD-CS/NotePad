@@ -35,3 +35,5 @@ create dictionaries or grammar guides for myself.
 2. As a user, I would like to select an existing **Note** from a **Pad** and modify its contents
 3. As a user, I would like to remove an existing **Note** from a **Pad**
 4. As a user, I would like to have multiple **Pads**
+5. As a user, I would like to save my list of **Pads** to file
+6. As a user, I would like to load my list of **Pads** from file
