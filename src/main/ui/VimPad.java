@@ -2,18 +2,27 @@ package ui;
 
 import model.Note;
 import model.Pad;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
 // Class responsible for running and displaying in console
-// ATTRIBUTION: Roughly modeled off of TellerApp class
+// ATTRIBUTION[1]:  VimPad was Roughly modeled off of TellerApp class
 //              in given instructions for Phase 1 with changed implementation and names for readability
+// Attribution[2]: processJson, saveSelectedPad, loadPad were modelled with respect to the methods in
+//                 "JsonSerializationDemo"
 public class VimPad {
 
     // Scanner
     Scanner userInput = new Scanner(System.in);
+
+    // Constants
+    private static final String JSON_STORE = "./data/pad.json";
 
     // Fields
     private Note selectedNote;
@@ -21,9 +30,13 @@ public class VimPad {
     private String input;
     private boolean run;
     private ArrayList<Pad> listOfPad;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // Runs VimPad application
-    public VimPad() {
+    public VimPad() throws FileNotFoundException {
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
         runVimPad();
     }
 
@@ -77,6 +90,8 @@ public class VimPad {
         System.out.println("\t Modify note = m");
         System.out.println("\t Add note to pad = a");
         System.out.println("\t Display note text = t");
+        System.out.println("\t Save selected pad = s");
+        System.out.println("\t Load pad = l");
     }
 
     // REQUIRES: A valid input from the list [n,p,rp,rn,sn,sp,q,d,m,a]
@@ -89,6 +104,8 @@ public class VimPad {
             processSelect(cmd);
         } else if (cmd.equals("a") || cmd.equals("m")) {
             processAddAndModify(cmd);
+        } else if (cmd.equals("s") || cmd.equals("l")) {
+            processJson(cmd);
         } else {
             processMisc(cmd);
         }
@@ -185,6 +202,17 @@ public class VimPad {
         this.selectedNote.changeNoteText(this.input);
     }
 
+    // Requires: cmd be either s or l
+    // Modifies: this
+    // Effects: Saves or loads pad to or from file
+    private void processJson(String cmd) {
+        if (cmd.equals("s")) {
+            saveSelectedPad();
+        } else {
+            loadPad();
+        }
+    }
+
     // EFFECTS: ask user for their input given "instruction text" and stores their answer in input
     private String processOutAndInput(String x) {
         System.out.println("\n " + x);
@@ -254,5 +282,28 @@ public class VimPad {
         System.out.println("| | | |     | |      |  | |  |     |   |       |  _ |     | |_/ |");
         System.out.println("\\ \\/  |     | |      |  | |  |     |   |       | || |     |    /");
         System.out.println(" \\__/      _|_|_     |__| |__|     |___|       |_||_|     |___/" + "\n");
+    }
+
+    // EFFECTS: saves the selected pad to file
+    private void saveSelectedPad() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(this.selectedPad);
+            jsonWriter.close();
+            System.out.println("Saved " + this.selectedPad.getPadTitle() + " to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads a pad from file and sets it as selected pad
+    private void loadPad() {
+        try {
+            this.selectedPad = jsonReader.read();
+            System.out.println("Loaded " + this.selectedPad + " from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 }

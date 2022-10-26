@@ -1,11 +1,16 @@
 package model;
 
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
+// Attribution[1]: toJson, notesToJson was modelled with respect to "JsonSerializationDemo"
 // Represents a pad containing a list of notes, and a title
-public class Pad {
+public class Pad implements Writable {
 
     private String padTitle;
     private ArrayList<Note> listOfNotes;
@@ -62,4 +67,22 @@ public class Pad {
         }
         return false;
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("padTitle", this.padTitle);
+        json.put("listOfNotes", notesToJson());
+        return json;
+    }
+
+    // EFFECTS: returns notes in this pad as a JSON array
+    private JSONArray notesToJson() {
+        JSONArray jsonArray = new JSONArray();
+        for (Note n : this.listOfNotes) {
+            jsonArray.put(n.toJson());
+        }
+        return jsonArray;
+    }
+
 }
