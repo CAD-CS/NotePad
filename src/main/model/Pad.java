@@ -15,7 +15,6 @@ public class Pad implements Writable {
     private String padTitle;
     private ArrayList<Note> listOfNotes;
 
-    // REQUIRES: Cannot create note with same names
     // MODIFIES: this
     // EFFECTS: Creates a new pad with a title and an empty list of notes
     public Pad(String title) {
@@ -32,7 +31,6 @@ public class Pad implements Writable {
     }
 
 
-    // REQUIRES: Cannot be the name of a pre-existing title
     // MODIFIES: this
     // EFFECTS: changes the name of the pad title
     public void changePadTitle(String newTitle) {

@@ -3,13 +3,13 @@ package model;
 import org.json.JSONObject;
 import persistence.Writable;
 
+
 // Attribution[1]: toJson was created with respect to "JsonSerializationDemo"
 // Represents a note containing a title and text
 public class Note implements Writable {
     private String noteTitle;
     private String text;
 
-    // REQUIRES: No pre-existing note with same name
     // MODIFIES: this
     // EFFECTS: creates a note with a title but with zero text (blank canvas)
     public Note(String title) {
@@ -26,7 +26,6 @@ public class Note implements Writable {
         return text;
     }
 
-    // REQUIRES: title cannot be that of a pre-existing one
     // MODIFIES: this
     // EFFECTS: Changes the title of the note
     public void changeNoteTitle(String newTitle) {

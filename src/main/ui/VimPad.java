@@ -21,9 +21,6 @@ public class VimPad {
     // Scanner
     Scanner userInput = new Scanner(System.in);
 
-    // Constants
-    private static final String JSON_STORE = "./data/pad.json";
-
     // Fields
     private Note selectedNote;
     private Pad selectedPad;
@@ -32,11 +29,12 @@ public class VimPad {
     private ArrayList<Pad> listOfPad;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
+    private String jsonStore = "./data/pad.json";
 
     // Runs VimPad application
     public VimPad() throws FileNotFoundException {
-        jsonWriter = new JsonWriter(JSON_STORE);
-        jsonReader = new JsonReader(JSON_STORE);
+        jsonWriter = new JsonWriter(jsonStore);
+        jsonReader = new JsonReader(jsonStore);
         runVimPad();
     }
 
@@ -94,7 +92,6 @@ public class VimPad {
         System.out.println("\t Load pad = l");
     }
 
-    // REQUIRES: A valid input from the list [n,p,rp,rn,sn,sp,q,d,m,a]
     // Modifies: this
     // EFFECTS: processes command based on input and calls more specific method to deal with subclass of input
     private void processMain(String cmd) {
@@ -111,7 +108,6 @@ public class VimPad {
         }
     }
 
-    // REQUIRES: cmd be one of p,n,rp,rn
     // EFFECTS: this
     // MODIFIES: calls processNew if n or p, or processRemove if rp or rn
     private void processNewAndRemove(String cmd) {
@@ -122,7 +118,6 @@ public class VimPad {
         }
     }
 
-    // REQUIRES: cmd be one of q, d,t
     // EFFECTS: this
     // MODIFIES: calls processAdd if a, or processModify m
     private void processMisc(String cmd) {
@@ -137,7 +132,6 @@ public class VimPad {
         }
     }
 
-    // REQUIRES: cmd be one of a or m
     // EFFECTS: this
     // MODIFIES: calls processAdd if a, or processModify m
     private void processAddAndModify(String cmd) {
@@ -148,20 +142,46 @@ public class VimPad {
         }
     }
 
-    // REQUIRES: Cmd be either n or p and the name of note or pad not be pre-existing
     // MODIFIES: this
     // EFFECTS: either creates a new Note and sets it as the selected note or creates a new pad, sets it as the
     //          selected pad and adds it to the list of pads
     private void processNew(String cmd) {
-        if (cmd.equals("n")) {
-            this.selectedNote = new Note(processOutAndInput("Title:"));
-        } else {
-            this.selectedPad = new Pad(processOutAndInput("Title:"));
-            this.listOfPad.add(this.selectedPad);
+        try {
+            String newTitle = processOutAndInput("Title:");
+            if (cmd.equals("n") && !isAlreadyInListOfNotes(newTitle)) {
+                this.selectedNote = new Note(newTitle);
+            } else if (cmd.equals("p") && !isAlreadyInListOfPads(newTitle)) {
+                this.selectedPad = new Pad(newTitle);
+                this.listOfPad.add(this.selectedPad);
+            } else {
+                System.out.println("*Preexisting Title*");
+            }
+        } catch (NullPointerException e) {
+            System.out.println("*Title cannot be empty*");
         }
     }
 
-    // REQUIRES: Cmd be either rn or rp
+
+    // EFFECTS: returns true if pad already exists
+    private boolean isAlreadyInListOfPads(String title) {
+        for (Pad p : this.listOfPad) {
+            if (p.getPadTitle().equals(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // EFFECTS: returns true if pad already exists
+    private boolean isAlreadyInListOfNotes(String title) {
+        for (Note n : this.selectedPad.getListOfNotes()) {
+            if (n.getNoteTitle().equals(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // MODIFIES: this
     // EFFECTS: either removes a note from the list of notes of the selected pad or removes the selected pad
     //          from the list of pads
@@ -173,15 +193,18 @@ public class VimPad {
         }
     }
 
-    // REQUIRES: Cmd be either sn or sp
     // MODIFIES: this
     // EFFECTS: either selects a note from the list of notes from the selected pad or selects a pad
     //          from the list of pads
     private void processSelect(String cmd) {
-        if (cmd.equals("sn")) {
-            selectNote(processOutAndInput("Select:"));
-        } else {
-            selectPad(processOutAndInput("Select:"));
+        try {
+            if (cmd.equals("sn")) {
+                selectNote(processOutAndInput("Select:"));
+            } else {
+                selectPad(processOutAndInput("Select:"));
+            }
+        } catch (NullPointerException e) {
+            System.out.println("*Please Enter a non null title*");
         }
     }
 
@@ -202,7 +225,6 @@ public class VimPad {
         this.selectedNote.changeNoteText(this.input);
     }
 
-    // Requires: cmd be either s or l
     // Modifies: this
     // Effects: Saves or loads pad to or from file
     private void processJson(String cmd) {
@@ -214,9 +236,13 @@ public class VimPad {
     }
 
     // EFFECTS: ask user for their input given "instruction text" and stores their answer in input
-    private String processOutAndInput(String x) {
+    private String processOutAndInput(String x) throws NullPointerException {
         System.out.println("\n " + x);
-        this.input = userInput.nextLine();
+        String result = userInput.nextLine();
+        if (result == null || result.equals("")) {
+            throw new NullPointerException();
+        }
+        this.input = result;
         return this.input;
     }
 
@@ -244,6 +270,37 @@ public class VimPad {
     // EFFECTS: Removes selected pad from list of pads
     private void removePad(Pad padToRemove) {
         this.listOfPad.removeIf(p -> padToRemove == p);
+    }
+
+    // EFFECTS: saves the selected pad to file
+    private void saveSelectedPad() {
+        try {
+            this.jsonStore = "./data/" + this.selectedPad.getPadTitle() + ".json";
+            jsonWriter = new JsonWriter(jsonStore);
+            jsonReader = new JsonReader(jsonStore);
+            jsonWriter.open();
+            jsonWriter.write(this.selectedPad);
+            jsonWriter.close();
+            System.out.println("Saved " + this.selectedPad.getPadTitle() + " to " + jsonStore);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + jsonStore);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads a pad from file and sets it as selected pad
+    private void loadPad() {
+        try {
+            this.jsonStore = "./data/" + processOutAndInput("Enter name of pad: ") + ".json";
+            jsonWriter = new JsonWriter(jsonStore);
+            jsonReader = new JsonReader(jsonStore);
+            this.selectedPad = jsonReader.read();
+            System.out.println("Loaded " + this.selectedPad + " from " + jsonStore);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + jsonStore);
+        } catch (NullPointerException e) {
+            System.out.println("*Please enter non null title*");
+        }
     }
 
     // MODIFIES: this
@@ -284,26 +341,5 @@ public class VimPad {
         System.out.println(" \\__/      _|_|_     |__| |__|     |___|       |_||_|     |___/" + "\n");
     }
 
-    // EFFECTS: saves the selected pad to file
-    private void saveSelectedPad() {
-        try {
-            jsonWriter.open();
-            jsonWriter.write(this.selectedPad);
-            jsonWriter.close();
-            System.out.println("Saved " + this.selectedPad.getPadTitle() + " to " + JSON_STORE);
-        } catch (FileNotFoundException e) {
-            System.out.println("Unable to write to file: " + JSON_STORE);
-        }
-    }
 
-    // MODIFIES: this
-    // EFFECTS: loads a pad from file and sets it as selected pad
-    private void loadPad() {
-        try {
-            this.selectedPad = jsonReader.read();
-            System.out.println("Loaded " + this.selectedPad + " from " + JSON_STORE);
-        } catch (IOException e) {
-            System.out.println("Unable to read from file: " + JSON_STORE);
-        }
-    }
 }
