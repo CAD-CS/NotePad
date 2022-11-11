@@ -77,8 +77,8 @@ public class VimPad {
     // Methods
     private void displayCommands() {
         System.out.println("Legend:");
-        System.out.println("\t Quit = q");
-        System.out.println("\t Commands = d");
+        System.out.println("\t Quit = q"); // gui
+        System.out.println("\t Commands = d"); // gui
         System.out.println("\t New note = n");
         System.out.println("\t New pad = p");
         System.out.println("\t Remove pad = rp");
@@ -87,7 +87,7 @@ public class VimPad {
         System.out.println("\t Select note = sn");
         System.out.println("\t Modify note = m");
         System.out.println("\t Add note to pad = a");
-        System.out.println("\t Display note text = t");
+        System.out.println("\t Display note text = t"); // gui
         System.out.println("\t Save selected pad = s");
         System.out.println("\t Load pad = l");
     }
