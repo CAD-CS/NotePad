@@ -12,11 +12,11 @@ import java.util.Objects;
 import java.util.Scanner;
 
 // Class responsible for running and displaying in console
-// ATTRIBUTION[1]:  VimPad was Roughly modeled off of TellerApp class
+// ATTRIBUTION[1]:  CLI was Roughly modeled off of TellerApp class
 //              in given instructions for Phase 1 with changed implementation and names for readability
 // Attribution[2]: processJson, saveSelectedPad, loadPad were modelled with respect to the methods in
 //                 "JsonSerializationDemo"
-public class VimPad {
+public class CLI {
 
     // Scanner
     Scanner userInput = new Scanner(System.in);
@@ -31,8 +31,8 @@ public class VimPad {
     private JsonReader jsonReader;
     private String jsonStore = "./data/pad.json";
 
-    // Runs VimPad application
-    public VimPad() throws FileNotFoundException {
+    // Runs CLI application
+    public CLI() throws FileNotFoundException {
         jsonWriter = new JsonWriter(jsonStore);
         jsonReader = new JsonReader(jsonStore);
         runVimPad();
@@ -40,12 +40,7 @@ public class VimPad {
 
     // EFFECTS: Displays the notes/pads and allows for modifying the fields
     private void runVimPad() {
-        System.out.println("###Start Program###");
-        System.out.println("\n__________________________________________________________________\n");
-        introArt();
-        System.out.println("\n__________________________________________________________________\n");
         initialize();
-        displayCommands();
         while (run) {
             System.out.println("\nEnter: \n");
             this.input = userInput.nextLine();
@@ -54,16 +49,31 @@ public class VimPad {
             displayInventory();
             System.out.println("************* \n");
         }
-        System.out.println("###End Program###");
     }
 
-    // Getters
+    // Getters & setters
     public Note getSelectedNote() {
         return this.selectedNote;
     }
 
+    public void setSelectedNote(Note n) {
+        this.selectedNote = n;
+    }
+
     public Pad getSelectedPad() {
         return this.selectedPad;
+    }
+
+    public void setSelectedPad(Pad p) {
+        this.selectedPad = p;
+    }
+
+    public ArrayList<Pad> getListOfPad() {
+        return this.listOfPad;
+    }
+
+    public void setListOfPad(ArrayList<Pad> lop) {
+        this.listOfPad = lop;
     }
 
     public String getInput() {
@@ -77,24 +87,24 @@ public class VimPad {
     // Methods
     private void displayCommands() {
         System.out.println("Legend:");
-        System.out.println("\t Quit = q"); // gui
-        System.out.println("\t Commands = d"); // gui
-        System.out.println("\t New note = n");
-        System.out.println("\t New pad = p");
-        System.out.println("\t Remove pad = rp");
-        System.out.println("\t Remove note = rn");
-        System.out.println("\t Select pad = sp");
-        System.out.println("\t Select note = sn");
-        System.out.println("\t Modify note = m");
-        System.out.println("\t Add note to pad = a");
-        System.out.println("\t Display note text = t"); // gui
-        System.out.println("\t Save selected pad = s");
-        System.out.println("\t Load pad = l");
+        System.out.println("\t Quit = q"); // exit
+        System.out.println("\t Commands = d"); // implicit
+        System.out.println("\t New note = n"); // Menu -> New Note
+        System.out.println("\t New pad = p"); // Menu -> New Pad
+        System.out.println("\t Remove pad = rp"); // Menu -> Close Current Pad
+        System.out.println("\t Remove note = rn"); // Menu -> Close Selected Note
+        System.out.println("\t Select pad = sp"); // Click on top row
+        System.out.println("\t Select note = sn"); // click on left column
+        System.out.println("\t Modify note = m"); // click and modify text in center
+        System.out.println("\t Add note to pad = a"); // Done when creating new note
+        System.out.println("\t Display note text = t"); // implicit
+        System.out.println("\t Save selected pad = s"); // Menu -> Save Pad
+        System.out.println("\t Load pad = l"); // Menu -> Load Pad // Also Menu -> Rename Pad/Note
     }
 
     // Modifies: this
     // EFFECTS: processes command based on input and calls more specific method to deal with subclass of input
-    private void processMain(String cmd) {
+    public void processMain(String cmd) {
         if (cmd.equals("n") || cmd.equals("p") || cmd.equals("rn") || cmd.equals("rp")) {
             processNewAndRemove(cmd);
         } else if (cmd.equals("sn") || cmd.equals("sp")) {
@@ -145,14 +155,13 @@ public class VimPad {
     // MODIFIES: this
     // EFFECTS: either creates a new Note and sets it as the selected note or creates a new pad, sets it as the
     //          selected pad and adds it to the list of pads
-    private void processNew(String cmd) {
+    public void processNew(String cmd) {
         try {
             String newTitle = processOutAndInput("Title:");
             if (cmd.equals("n") && !isAlreadyInListOfNotes(newTitle)) {
-                this.selectedNote = new Note(newTitle);
+                this.selectedPad.addNote(new Note(newTitle));
             } else if (cmd.equals("p") && !isAlreadyInListOfPads(newTitle)) {
-                this.selectedPad = new Pad(newTitle);
-                this.listOfPad.add(this.selectedPad);
+                this.listOfPad.add(new Pad(newTitle));
             } else {
                 System.out.println("*Preexisting Title*");
             }
@@ -326,20 +335,4 @@ public class VimPad {
             System.out.println("\t" + n.getNoteTitle());
         }
     }
-
-
-    // Intro and outro methods
-
-    // EFFECTS: displays the intro logo
-    public void introArt() {
-        System.out.println("__  __     _____     ___  ___      _______      ____       ___");
-        System.out.println("| | | |     | |      |  | |  |     |  __  |    | __ |     |  _ \\");
-        System.out.println("| | | |     | |      |  | |  |     | |__| |    ||__||     | | \\  |");
-        System.out.println("| | | |     | |      |  \\_/  |     |    __|    |    |     | |  | |");
-        System.out.println("| | | |     | |      |  | |  |     |   |       |  _ |     | |_/ |");
-        System.out.println("\\ \\/  |     | |      |  | |  |     |   |       | || |     |    /");
-        System.out.println(" \\__/      _|_|_     |__| |__|     |___|       |_||_|     |___/" + "\n");
-    }
-
-
 }

@@ -1,16 +1,18 @@
 package ui;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 
 // Attribution[1]: The try-catch was modified with respect to the main function in "JsonSerializationDemo"
 public class Main {
     public static void main(String[] args) {
-        new MainWindow();
-        /*
+        JFrame errorWindow = new JFrame();
         try {
-            new VimPad();
+            MainWindow mainWindow = new MainWindow();
+            errorWindow.add(mainWindow);
         } catch (FileNotFoundException e) {
-            System.out.println("### *Beep-Boop* File Not Found ###");
-        } */
+            JOptionPane.showMessageDialog(errorWindow, "File not found");
+        }
+
     }
 }
