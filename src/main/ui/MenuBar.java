@@ -6,7 +6,7 @@ import model.Pad;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+/*
 public class MenuBar extends JMenuBar {
 
     private JMenu file;
@@ -75,3 +75,5 @@ public class MenuBar extends JMenuBar {
         });
     }
 }
+
+ */

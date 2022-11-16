@@ -32,24 +32,12 @@ public class VimPad {
         return this.selectedNote;
     }
 
-    public void setSelectedNote(Note n) {
-        this.selectedNote = n;
-    }
-
     public Pad getSelectedPad() {
         return this.selectedPad;
     }
 
-    public void setSelectedPad(Pad p) {
-        this.selectedPad = p;
-    }
-
     public ArrayList<Pad> getListOfPad() {
         return this.listOfPad;
-    }
-
-    public void setListOfPad(ArrayList<Pad> lop) {
-        this.listOfPad = lop;
     }
 
     // Modifies: this
@@ -74,11 +62,11 @@ public class VimPad {
 
     // EFFECTS: this
     // MODIFIES: calls processNew if n or p, or processRemove if rp or rn
-    private void processNewAndRemove(String cmd, String input) throws  ExistingTitleException {
+    private void processNewAndRemove(String cmd, String input) throws ExistingTitleException {
         if (cmd.equals("n") || cmd.equals("p")) {
             processNew(cmd, input);
         } else {
-            processRemove(cmd);
+            processRemove(cmd, input);
         }
     }
 
@@ -90,15 +78,15 @@ public class VimPad {
     private void processNew(String cmd, String input) throws NullPointerException, ExistingTitleException {
         if (cmd.equals("n")) {
             if (getSelectedPad() == null) {
-                throw new NullPointerException();
+                throw new NullPointerException("Must make/select pad first");
             } else if (isAlreadyInListOfNotes(input)) {
-                throw new ExistingTitleException();
+                throw new ExistingTitleException("Title already exists");
             }
             getSelectedPad().addNote(new Note(input));
-        } else if (isAlreadyInListOfPads(input)) {
-            throw new ExistingTitleException();
-        } else {
+        } else if (!isAlreadyInListOfPads(input)) {
             getListOfPad().add(new Pad(input));
+        } else {
+            throw new ExistingTitleException("Title already exists");
         }
     }
 
@@ -126,18 +114,29 @@ public class VimPad {
     // MODIFIES: this
     // EFFECTS: either removes a note from the list of notes of the selected pad or removes the selected pad
     //          from the list of pads
-    private void processRemove(String cmd) {
+    private void processRemove(String cmd, String input) {
         if (cmd.equals("rn")) {
-            this.selectedPad.removeNote(this.selectedNote);
+            if (getSelectedNote() != null && getSelectedNote().getNoteTitle().equals(input)) {
+                this.selectedNote = null;
+            }
+            if (getSelectedPad() != null) {
+                if (isAlreadyInListOfNotes(input)) {
+                    this.selectedPad.removeNote(new Note(input));
+                }
+            }
         } else {
-            removePad(this.selectedPad);
+            if (getSelectedPad() != null && getSelectedPad().getPadTitle().equals(input)) {
+                this.selectedPad = null;
+            }
+            removePad(new Pad(input));
         }
     }
+
 
     // MODIFIES: this
     // EFFECTS: Removes selected pad from list of pads
     private void removePad(Pad padToRemove) {
-        this.listOfPad.removeIf(p -> padToRemove == p);
+        getListOfPad().remove(padToRemove);
     }
 
 
@@ -163,7 +162,7 @@ public class VimPad {
 
     // MODIFIES: this
     // EFFECTS: uses input to find selected pad from the list of pads
-    private void selectPad(String select) throws NotFoundException {
+    public void selectPad(String select) throws NotFoundException {
         boolean found = false;
         for (Pad p : this.listOfPad) {
             if (Objects.equals(p.getPadTitle(), select)) {
@@ -172,13 +171,13 @@ public class VimPad {
             }
         }
         if (!found) {
-            throw new NotFoundException();
+            throw new NotFoundException("Pad not found");
         }
     }
 
     // MODIFIES: this
     // EFFECTS: uses input to find selected note from the list of notes of the selected pad
-    private void selectNote(String select) throws NotFoundException {
+    public void selectNote(String select) throws NotFoundException {
         boolean found = false;
         for (Note n : this.selectedPad.getListOfNotes()) {
             if (Objects.equals(n.getNoteTitle(), select)) {
@@ -187,7 +186,7 @@ public class VimPad {
             }
         }
         if (!found) {
-            throw new NotFoundException();
+            throw new NotFoundException("Note not found");
         }
     }
 
@@ -219,7 +218,7 @@ public class VimPad {
         this.jsonStore = "./data/" + input + ".json";
         jsonWriter = new JsonWriter(jsonStore);
         jsonReader = new JsonReader(jsonStore);
-        this.selectedPad = jsonReader.read();
+        this.listOfPad.add(jsonReader.read());
     }
 
 
@@ -227,10 +226,10 @@ public class VimPad {
     // EFFECTS: changes name of selected note or pad, throw IAE if empty, throw ETE if there exists a note or pad
     //          with same name
     private void processChangeTitle(String cmd, String input) throws IllegalArgumentException, ExistingTitleException {
-        if (input.equals("") || input.equals(null)) {
-            throw new IllegalArgumentException();
+        if (input.equals("")) {
+            throw new IllegalArgumentException("New title cannot be empty");
         } else if (isAlreadyInListOfPads(input) || isAlreadyInListOfNotes(input)) {
-            throw new ExistingTitleException();
+            throw new ExistingTitleException("Title already exists");
         } else if (cmd.equals("cn")) {
             this.selectedNote.changeNoteTitle(input);
         } else {

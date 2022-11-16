@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 
 // Responsible for creating the main window for the graphical user interface
 //
+/*
 public class MainWindow extends JFrame {
 
     private CLI vimPad;
@@ -59,3 +60,5 @@ public class MainWindow extends JFrame {
 
 
 }
+
+ */

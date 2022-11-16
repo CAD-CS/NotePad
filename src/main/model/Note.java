@@ -3,6 +3,8 @@ package model;
 import org.json.JSONObject;
 import persistence.Writable;
 
+import java.util.Objects;
+
 
 // Attribution[1]: toJson was created with respect to "JsonSerializationDemo"
 // Represents a note containing a title and text
@@ -45,5 +47,22 @@ public class Note implements Writable {
         json.put("noteTitle", this.noteTitle);
         json.put("text", this.text);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Note)) {
+            return false;
+        }
+        Note note = (Note) o;
+        return Objects.equals(getNoteTitle(), note.getNoteTitle());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNoteTitle());
     }
 }

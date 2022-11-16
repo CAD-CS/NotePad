@@ -1,14 +1,12 @@
 package ui;
 
+import exception.ExistingTitleException;
+import exception.NotFoundException;
 import model.Note;
 import model.Pad;
-import persistence.JsonReader;
-import persistence.JsonWriter;
+import model.VimPad;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
 
 // Class responsible for running and displaying in console
@@ -22,58 +20,13 @@ public class CLI {
     Scanner userInput = new Scanner(System.in);
 
     // Fields
-    private Note selectedNote;
-    private Pad selectedPad;
+    private VimPad vm;
     private String input;
     private boolean run;
-    private ArrayList<Pad> listOfPad;
-    private JsonWriter jsonWriter;
-    private JsonReader jsonReader;
-    private String jsonStore = "./data/pad.json";
 
     // Runs CLI application
-    public CLI() throws FileNotFoundException {
-        jsonWriter = new JsonWriter(jsonStore);
-        jsonReader = new JsonReader(jsonStore);
+    public CLI() {
         runVimPad();
-    }
-
-    // EFFECTS: Displays the notes/pads and allows for modifying the fields
-    private void runVimPad() {
-        initialize();
-        while (run) {
-            System.out.println("\nEnter: \n");
-            this.input = userInput.nextLine();
-            System.out.println("************* \n");
-            processMain(input);
-            displayInventory();
-            System.out.println("************* \n");
-        }
-    }
-
-    // Getters & setters
-    public Note getSelectedNote() {
-        return this.selectedNote;
-    }
-
-    public void setSelectedNote(Note n) {
-        this.selectedNote = n;
-    }
-
-    public Pad getSelectedPad() {
-        return this.selectedPad;
-    }
-
-    public void setSelectedPad(Pad p) {
-        this.selectedPad = p;
-    }
-
-    public ArrayList<Pad> getListOfPad() {
-        return this.listOfPad;
-    }
-
-    public void setListOfPad(ArrayList<Pad> lop) {
-        this.listOfPad = lop;
     }
 
     public String getInput() {
@@ -82,6 +35,34 @@ public class CLI {
 
     public boolean getRun() {
         return this.run;
+    }
+
+    // EFFECTS: Displays the notes/pads and allows for modifying the fields
+    private void runVimPad() {
+        initialize();
+        displayCommands();
+        while (run) {
+            System.out.println("\nEnter: \n");
+            this.input = userInput.nextLine();
+            System.out.println("************* \n");
+            try {
+                preprocessMain(input);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            displayInventory();
+            System.out.println("************* \n");
+        }
+
+    }
+
+
+    // MODIFIES: this
+    // EFFECTS: initializes the program with blank note, pad, input, and list of pad
+    private void initialize() {
+        this.vm = new VimPad();
+        this.input = "";
+        this.run = true;
     }
 
     // Methods
@@ -96,151 +77,48 @@ public class CLI {
         System.out.println("\t Select pad = sp"); // Click on top row
         System.out.println("\t Select note = sn"); // click on left column
         System.out.println("\t Modify note = m"); // click and modify text in center
-        System.out.println("\t Add note to pad = a"); // Done when creating new note
+        System.out.println("\t Change name of pad = cp"); // Done when creating new note
+        System.out.println("\t Change name of note = cn"); // Done when creating new note
         System.out.println("\t Display note text = t"); // implicit
         System.out.println("\t Save selected pad = s"); // Menu -> Save Pad
         System.out.println("\t Load pad = l"); // Menu -> Load Pad // Also Menu -> Rename Pad/Note
     }
 
-    // Modifies: this
-    // EFFECTS: processes command based on input and calls more specific method to deal with subclass of input
-    public void processMain(String cmd) {
-        if (cmd.equals("n") || cmd.equals("p") || cmd.equals("rn") || cmd.equals("rp")) {
-            processNewAndRemove(cmd);
-        } else if (cmd.equals("sn") || cmd.equals("sp")) {
-            processSelect(cmd);
-        } else if (cmd.equals("a") || cmd.equals("m")) {
-            processAddAndModify(cmd);
-        } else if (cmd.equals("s") || cmd.equals("l")) {
-            processJson(cmd);
-        } else {
-            processMisc(cmd);
-        }
-    }
 
-    // EFFECTS: this
-    // MODIFIES: calls processNew if n or p, or processRemove if rp or rn
-    private void processNewAndRemove(String cmd) {
+    // MODIFIES: this
+    // EFFECTS: calls processMain in vm with respective input
+    public void preprocessMain(String cmd) throws ExistingTitleException, NotFoundException, IOException {
         if (cmd.equals("n") || cmd.equals("p")) {
-            processNew(cmd);
+            vm.processMain(cmd, processOutAndInput("Enter title:"));
+        } else if (cmd.equals("rn") || cmd.equals("rp")) {
+            vm.processMain(cmd, "");
+        } else if (cmd.equals("sn") || cmd.equals("sp")) {
+            vm.processMain(cmd, processOutAndInput("Select:"));
+        } else if (cmd.equals("m")) {
+            vm.processMain(cmd, processOutAndInput("Enter new text: "));
+        } else if (cmd.equals("cn") || cmd.equals("cp")) {
+            vm.processMain(cmd, processOutAndInput("Enter new title:"));
+        } else if (cmd.equals("l")) {
+            vm.processMain(cmd, processOutAndInput("Load... :"));
+        } else if (cmd.equals("s")) {
+            vm.processMain(cmd, "");
         } else {
-            processRemove(cmd);
+            preprocessRest(cmd);
         }
     }
 
     // EFFECTS: this
-    // MODIFIES: calls processAdd if a, or processModify m
-    private void processMisc(String cmd) {
-        if (cmd.equals("q")) {
-            this.run = false;
-        } else if (cmd.equals("d")) {
-            displayCommands();
-        } else if (cmd.equals("t")) {
-            System.out.println(this.selectedNote.getText() + "\n");
-        } else {
-            System.out.println("Invalid input");
-        }
-    }
-
-    // EFFECTS: this
-    // MODIFIES: calls processAdd if a, or processModify m
-    private void processAddAndModify(String cmd) {
-        if (cmd.equals("a")) {
-            processAdd();
-        } else {
-            processModify();
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: either creates a new Note and sets it as the selected note or creates a new pad, sets it as the
-    //          selected pad and adds it to the list of pads
-    public void processNew(String cmd) {
-        try {
-            String newTitle = processOutAndInput("Title:");
-            if (cmd.equals("n") && !isAlreadyInListOfNotes(newTitle)) {
-                this.selectedPad.addNote(new Note(newTitle));
-            } else if (cmd.equals("p") && !isAlreadyInListOfPads(newTitle)) {
-                this.listOfPad.add(new Pad(newTitle));
-            } else {
-                System.out.println("*Preexisting Title*");
-            }
-        } catch (NullPointerException e) {
-            System.out.println("*Title cannot be empty*");
-        }
-    }
-
-
-    // EFFECTS: returns true if pad already exists
-    private boolean isAlreadyInListOfPads(String title) {
-        for (Pad p : this.listOfPad) {
-            if (p.getPadTitle().equals(title)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // EFFECTS: returns true if pad already exists
-    private boolean isAlreadyInListOfNotes(String title) {
-        for (Note n : this.selectedPad.getListOfNotes()) {
-            if (n.getNoteTitle().equals(title)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: either removes a note from the list of notes of the selected pad or removes the selected pad
-    //          from the list of pads
-    private void processRemove(String cmd) {
-        if (cmd.equals("rn")) {
-            this.selectedPad.removeNote(this.selectedNote);
-        } else {
-            removePad(this.selectedPad);
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: either selects a note from the list of notes from the selected pad or selects a pad
-    //          from the list of pads
-    private void processSelect(String cmd) {
-        try {
-            if (cmd.equals("sn")) {
-                selectNote(processOutAndInput("Select:"));
-            } else {
-                selectPad(processOutAndInput("Select:"));
-            }
-        } catch (NullPointerException e) {
-            System.out.println("*Please Enter a non null title*");
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: adds selected note to the list of notes of the selected pad
-    private void processAdd() {
-        this.selectedPad.addNote(this.selectedNote);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: outputs selected note's text, asks user to input new text and stores the text as the note's
-    //          new text
-    private void processModify() {
-        System.out.println("Old Text: ");
-        System.out.println(this.selectedNote.getText());
-        System.out.println("New Text: \n");
-        this.input = userInput.nextLine();
-        this.selectedNote.changeNoteText(this.input);
-    }
-
-    // Modifies: this
-    // Effects: Saves or loads pad to or from file
-    private void processJson(String cmd) {
-        if (cmd.equals("s")) {
-            saveSelectedPad();
-        } else {
-            loadPad();
+    // MODIFIES: processes the rest of the commands
+    public void preprocessRest(String cmd) {
+        switch (cmd) {
+            case "q":
+                this.run = false;
+                break;
+            case "d":
+                displayCommands();
+                break;
+            default:
+                break;
         }
     }
 
@@ -255,84 +133,38 @@ public class CLI {
         return this.input;
     }
 
-    // MODIFIES: this
-    // EFFECTS: uses input to find selected pad from the list of pads
-    private void selectPad(String select) {
-        for (Pad p : this.listOfPad) {
-            if (Objects.equals(p.getPadTitle(), select)) {
-                this.selectedPad = p;
-            }
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: uses input to find selected note from the list of notes of the selected pad
-    private void selectNote(String select) {
-        for (Note n : this.selectedPad.getListOfNotes()) {
-            if (Objects.equals(n.getNoteTitle(), select)) {
-                this.selectedNote = n;
-            }
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: Removes selected pad from list of pads
-    private void removePad(Pad padToRemove) {
-        this.listOfPad.removeIf(p -> padToRemove == p);
-    }
-
-    // EFFECTS: saves the selected pad to file
-    private void saveSelectedPad() {
-        try {
-            this.jsonStore = "./data/" + this.selectedPad.getPadTitle() + ".json";
-            jsonWriter = new JsonWriter(jsonStore);
-            jsonReader = new JsonReader(jsonStore);
-            jsonWriter.open();
-            jsonWriter.write(this.selectedPad);
-            jsonWriter.close();
-            System.out.println("Saved " + this.selectedPad.getPadTitle() + " to " + jsonStore);
-        } catch (FileNotFoundException e) {
-            System.out.println("Unable to write to file: " + jsonStore);
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: loads a pad from file and sets it as selected pad
-    private void loadPad() {
-        try {
-            this.jsonStore = "./data/" + processOutAndInput("Enter name of pad: ") + ".json";
-            jsonWriter = new JsonWriter(jsonStore);
-            jsonReader = new JsonReader(jsonStore);
-            this.selectedPad = jsonReader.read();
-            System.out.println("Loaded " + this.selectedPad + " from " + jsonStore);
-        } catch (IOException e) {
-            System.out.println("Unable to read from file: " + jsonStore);
-        } catch (NullPointerException e) {
-            System.out.println("*Please enter non null title*");
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: initializes the program with blank note, pad, input, and list of pad
-    private void initialize() {
-        this.selectedNote = new Note("");
-        this.selectedPad = new Pad("");
-        this.input = "";
-        this.run = true;
-        this.listOfPad = new ArrayList<>();
-    }
-
     // EFFECTS: displays current selected items, and list of pad
     private void displayInventory() {
-        System.out.println("\n--Selected Pad-- " + this.selectedPad.getPadTitle());
-        System.out.println("--Selected Note-- " + this.selectedNote.getNoteTitle());
+        if (vm.getSelectedPad() == null && vm.getListOfPad() != null) {
+            System.out.println("\n--Selected Pad-- ");
+            System.out.println("--Selected Note-- ");
+            System.out.println("--List of pads-- ");
+            for (Pad p : vm.getListOfPad()) {
+                System.out.println("\t" + p.getPadTitle());
+            }
+            System.out.println("List of Notes in Pad: ");
+        } else if (vm.getSelectedPad() == null && vm.getSelectedNote() == null) {
+            System.out.println("\n--Selected Pad-- ");
+            System.out.println("--Selected Note-- ");
+            System.out.println("--List of pads-- ");
+            System.out.println("List of Notes in Pad: ");
+        } else {
+            formatDisplayInventory();
+        }
+    }
+
+    //  EFFECTS: formats output string for displayInventory
+    private void formatDisplayInventory() {
+        System.out.println("\n--Selected Pad-- " + vm.getSelectedPad().getPadTitle());
+        System.out.println("--Selected Note-- " + vm.getSelectedNote().getNoteTitle());
         System.out.println("--List of pads-- ");
-        for (Pad p : this.listOfPad) {
+        for (Pad p : vm.getListOfPad()) {
             System.out.println("\t" + p.getPadTitle());
         }
         System.out.println("List of Notes in Pad: ");
-        for (Note n : this.selectedPad.getListOfNotes()) {
+        for (Note n : vm.getSelectedPad().getListOfNotes()) {
             System.out.println("\t" + n.getNoteTitle());
         }
     }
+
 }

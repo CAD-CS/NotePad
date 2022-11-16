@@ -57,9 +57,8 @@ public class Pad implements Writable {
 
     // EFFECTS: returns true if a note with the same name in the pad
     private boolean isInPad(Note theNote, ArrayList<Note> lon) {
-        String nameOfNote = theNote.getNoteTitle();
         for (Note n : lon) {
-            if (Objects.equals(nameOfNote, n.getNoteTitle())) {
+            if (n.equals(theNote)) {
                 return true;
             }
         }
@@ -81,6 +80,23 @@ public class Pad implements Writable {
             jsonArray.put(n.toJson());
         }
         return jsonArray;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Pad))  {
+            return false;
+        }
+        Pad pad = (Pad) o;
+        return Objects.equals(getPadTitle(), pad.getPadTitle());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPadTitle());
     }
 
 }
