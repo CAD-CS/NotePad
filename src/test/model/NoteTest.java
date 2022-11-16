@@ -15,16 +15,26 @@ public class NoteTest {
     }
 
     @Test
-    public void TestChangeNoteTitle() {
+    public void testChangeNoteTitle() {
         note.changeNoteTitle("Test");
 
         assertEquals("Test" , note.getNoteTitle());
     }
 
     @Test
-    public void TestChangeNoteText() {
+    public void testChangeNoteText() {
         assertEquals(null , note.getText());
         note.changeNoteText("Test Text");
         assertEquals("Test Text" , note.getText());
+    }
+
+    @Test
+    public void testEquals() {
+        assertFalse(note.equals(1));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(80204897, note.hashCode());
     }
 }

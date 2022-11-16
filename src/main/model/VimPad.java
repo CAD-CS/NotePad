@@ -116,8 +116,10 @@ public class VimPad {
     //          from the list of pads
     private void processRemove(String cmd, String input) {
         if (cmd.equals("rn")) {
-            if (getSelectedNote() != null && getSelectedNote().getNoteTitle().equals(input)) {
-                this.selectedNote = null;
+            if (getSelectedNote() != null) {
+                if (getSelectedNote().getNoteTitle().equals(input)) {
+                    this.selectedNote = null;
+                }
             }
             if (getSelectedPad() != null) {
                 if (isAlreadyInListOfNotes(input)) {
@@ -125,8 +127,10 @@ public class VimPad {
                 }
             }
         } else {
-            if (getSelectedPad() != null && getSelectedPad().getPadTitle().equals(input)) {
-                this.selectedPad = null;
+            if (getSelectedPad() != null) {
+                if (getSelectedPad().getPadTitle().equals(input)) {
+                    this.selectedPad = null;
+                }
             }
             removePad(new Pad(input));
         }

@@ -59,4 +59,19 @@ public class PadTest {
         pad.removeNote(n3);
         assertEquals(2 , pad.getListOfNotes().size());
     }
+
+    @Test
+    public void testEquals() {
+        assertFalse(pad.equals(n1));
+    }
+
+    @Test
+    public void testEquals2() {
+        assertTrue(pad.equals(pad));
+    }
+
+    @Test
+    public void testHashcode() {
+        assertEquals(80204897,pad.hashCode());
+    }
 }

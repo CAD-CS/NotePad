@@ -317,4 +317,109 @@ public class VimPadTest {
             fail();
         }
     }
+
+    @Test
+    public void processSelect1Test() {
+        try {
+            vm.processMain("p", "test1");
+            vm.processMain("sp", "test1");
+            assertEquals("test1", vm.getSelectedPad().getPadTitle());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processSelect2Test() {
+        try {
+            vm.processMain("p", "test1");
+            vm.processMain("sp", "test1");
+            vm.processMain("n", "test1");
+            vm.processMain("n", "test2");
+            vm.processMain("sn", "test2");
+            assertEquals("test2", vm.getSelectedNote().getNoteTitle());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processMainFailTest() {
+        try {
+            vm.processMain("x", "");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processSaveAndLoad() {
+        try {
+            vm.processMain("l", "TESTPAD2");
+            vm.processMain("sp", "TESTPAD2");
+            vm.processMain("s", "");
+            assertEquals("TESTPAD2", vm.getSelectedPad().getPadTitle());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processRemove3Test() {
+        try {
+            vm.processMain("p" , "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("rp", "test pad 1");
+            assertEquals("test pad", vm.getSelectedPad().getPadTitle());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processRemove4Test() {
+        try {
+            vm.processMain("p" , "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("n", "test note");
+            vm.processMain("sn", "test note");
+            vm.processMain("rn", "test note1");
+            assertEquals("test note", vm.getSelectedNote().getNoteTitle());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processRemove5Test() {
+        try {
+            vm.processMain("p" , "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("n", "test note");
+            vm.processMain("sn", "test note");
+            vm.processMain("rp", "test pad");
+            assertNull(vm.getSelectedPad());
+            assertEquals(0, vm.getListOfPad().size());
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
+    public void processRemove6Test() {
+        try {
+            vm.processMain("p" , "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("n", "test note");
+            vm.processMain("sn", "test note");
+            vm.processMain("rn", "test note");
+            assertNull(vm.getSelectedNote());
+            assertEquals(0, vm.getSelectedPad().getListOfNotes().size());
+        } catch (Exception e) {
+            fail();
+        }
+    }
 }
