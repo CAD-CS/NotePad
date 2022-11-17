@@ -58,7 +58,7 @@ public class MainWindow extends JFrame {
 
     // EFFECTS:  deals with the exceptions
     public void dealWithException(Exception e) {
-        if (e.getMessage().isBlank() || e.getMessage() == null || e.getMessage().isEmpty()) {
+        if (e.getMessage() == null || e.getMessage().isEmpty()) {
             JOptionPane.showMessageDialog(this,"Invalid");
         } else {
             JOptionPane.showMessageDialog(this, e.getMessage());
