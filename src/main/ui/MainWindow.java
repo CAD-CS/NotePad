@@ -2,63 +2,70 @@ package ui;
 
 import model.Note;
 import model.Pad;
+import model.VimPad;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileNotFoundException;
 
 // Responsible for creating the main window for the graphical user interface
 //
-/*
+
 public class MainWindow extends JFrame {
 
-    private CLI vimPad;
+    private VimPad vm;
     private MenuBar menuBar;
     private PadRow padRow;
 
-    public MainWindow() throws FileNotFoundException {
-        super("CLI");
-        initialize();
-        vimPad = new CLI();
-        System.out.println("dfd");
+    public MainWindow() {
+        super("VimPad");
+        runMainWindow();
     }
 
+    //  MODIFIES: this
+    //  EFFECTS: initializes and runs main window, and also deals with the exceptions
+    public void runMainWindow() {
+        vm = new VimPad();
+        initialize();
+    }
+
+
     // MODIFIES: this
-    // EFFECTS: initializes the main window, menu bar, and padrow
-    private void initialize() throws FileNotFoundException {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // Jframe
+    // EFFECTS: initializes the main window, menu bar, and padRow
+    private void initialize() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(new Dimension(1000, 500));
         setLocationRelativeTo(null);
         setVisible(true);
-        menuBar = new MenuBar();
-        this.setJMenuBar(menuBar);
-        padRow = new PadRow();
-        menuBar.setPadRow(padRow);
-        this.add(padRow, BorderLayout.NORTH);
-        menuBar.setVimPad(vimPad);
-
-
-        Note n1 = new Note("note 1");
-        n1.changeNoteText("Testing once");
-        Note n2 = new Note("note 2");
-        n2.changeNoteText("Testing twice");
-        Pad p = new Pad("Pad one");
-        p.addNote(n1);
-        p.addNote(n2);
-        addPadToTab(p);
-
+        initializeMenuBar();
     }
 
-    private void addPadToTab(Pad pad) {
-        CenterNoteAndText centerNoteAndText = new CenterNoteAndText();
+    //  EFFECTS: initializes the menu bar
+    private void initializeMenuBar()  {
+        menuBar = new MenuBar(vm, this);
+        this.setJMenuBar(menuBar);
+        padRow = new PadRow(this, vm);
+        menuBar.setPadRow(padRow);
+        this.add(padRow, BorderLayout.NORTH);
+    }
+
+    public void addPadToTab(Pad pad) {
+        CenterNoteAndText centerNoteAndText = new CenterNoteAndText(vm);
         for (Note note : pad.getListOfNotes()) {
             centerNoteAndText.addNoteButton(note);
         }
         padRow.addTab(pad.getPadTitle(),centerNoteAndText);
     }
 
+    // EFFECTS:  deals with the exceptions
+    public void dealWithException(Exception e) {
+        if (e.getMessage().isBlank() || e.getMessage() == null || e.getMessage().isEmpty()) {
+            JOptionPane.showMessageDialog(this,"Invalid");
+        } else {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
 
 
 
 }
-
- */

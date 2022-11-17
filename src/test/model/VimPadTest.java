@@ -422,4 +422,43 @@ public class VimPadTest {
             fail();
         }
     }
+
+    @Test
+    public void processRemoveFinalTest() {
+        try {
+            vm.processMain("p" , "test pad");
+            vm.processMain("rn", "test note");
+            assertNull(vm.getSelectedPad());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processDeselectPad() {
+        try {
+            vm.processMain("p", "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("dsp", "");
+            assertNull(vm.getSelectedPad());
+            assertEquals(1,vm.getListOfPad().size());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void processDeselectNote() {
+        try {
+            vm.processMain("p", "test pad");
+            vm.processMain("sp", "test pad");
+            vm.processMain("n", "test note");
+            vm.processMain("sn", "test note");
+            vm.processMain("dsn", "");
+            assertNull(vm.getSelectedNote());
+            assertEquals(1,vm.getSelectedPad().getListOfNotes().size());
+        } catch (Exception e) {
+            fail();
+        }
+    }
 }

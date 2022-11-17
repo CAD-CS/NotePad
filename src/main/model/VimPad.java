@@ -54,6 +54,8 @@ public class VimPad {
             processChangeTitle(cmd, input);
         } else if (cmd.equals("s") || cmd.equals("l")) {
             processJson(cmd, input);
+        } else if (cmd.equals("dsn") || cmd.equals("dsp")) {
+            deselect(cmd);
         } else {
             throw new IllegalArgumentException("Invalid Argument");
         }
@@ -238,6 +240,16 @@ public class VimPad {
             this.selectedNote.changeNoteTitle(input);
         } else {
             this.selectedPad.changePadTitle(input);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets selected note or pad to null
+    private void deselect(String cmd) {
+        if (cmd.equals("dsn")) {
+            this.selectedNote = null;
+        } else {
+            this.selectedPad = null;
         }
     }
 

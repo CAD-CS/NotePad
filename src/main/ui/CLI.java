@@ -26,7 +26,7 @@ public class CLI {
 
     // Runs CLI application
     public CLI() {
-        runVimPad();
+        runCLI();
     }
 
     public String getInput() {
@@ -38,7 +38,7 @@ public class CLI {
     }
 
     // EFFECTS: Displays the notes/pads and allows for modifying the fields
-    private void runVimPad() {
+    private void runCLI() {
         initialize();
         displayCommands();
         while (run) {
