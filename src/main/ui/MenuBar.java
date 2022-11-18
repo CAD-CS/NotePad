@@ -50,10 +50,6 @@ public class MenuBar extends JMenuBar {
         addFunctionalityToRemoveNote();
     }
 
-    public void setPadRow(PadRow pd) {
-        this.padRow = pd;
-    }
-
     public void addFunctionalityToOpen() {
         open.addActionListener(new ActionListener() {
             @Override
@@ -63,7 +59,6 @@ public class MenuBar extends JMenuBar {
                     vm.processMain("l", fileName);
                     vm.selectPad(fileName);
                     window.addPadToTab(vm.getSelectedPad());
-                    vm.processMain("dsp", "");
                 } catch (Exception exception) {
                     window.dealWithException(exception);
                 }
@@ -152,5 +147,9 @@ public class MenuBar extends JMenuBar {
                 }
             }
         });
+    }
+
+    public void setPadRow(PadRow pd) {
+        this.padRow = pd;
     }
 }

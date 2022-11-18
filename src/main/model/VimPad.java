@@ -18,7 +18,7 @@ public class VimPad {
     private ArrayList<Pad> listOfPad;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
-    private String jsonStore = "./data/pad.json";
+    private String jsonStore = "";
 
 
     public VimPad() {

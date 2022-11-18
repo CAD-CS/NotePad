@@ -16,7 +16,7 @@ public class Note implements Writable {
     // EFFECTS: creates a note with a title but with zero text (blank canvas)
     public Note(String title) {
         this.noteTitle = title;
-        this.text = null;
+        this.text = "";
     }
 
 

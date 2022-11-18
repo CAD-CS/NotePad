@@ -156,7 +156,11 @@ public class CLI {
     //  EFFECTS: formats output string for displayInventory
     private void formatDisplayInventory() {
         System.out.println("\n--Selected Pad-- " + vm.getSelectedPad().getPadTitle());
-        System.out.println("--Selected Note-- " + vm.getSelectedNote().getNoteTitle());
+        if (vm.getSelectedNote() != null) {
+            System.out.println("--Selected Note-- " + vm.getSelectedNote().getNoteTitle());
+        } else {
+            System.out.println("--Selected Note-- ");
+        }
         System.out.println("--List of pads-- ");
         for (Pad p : vm.getListOfPad()) {
             System.out.println("\t" + p.getPadTitle());

@@ -3,6 +3,10 @@ package ui;
 import model.VimPad;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PadRow extends JTabbedPane {
 
@@ -13,6 +17,16 @@ public class PadRow extends JTabbedPane {
         super();
         this.window = window;
         this.vm = vm;
+        this.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                try {
+                    vm.selectPad(getTitleAt(getSelectedIndex()));
+                } catch (Exception exception) {
+                    window.dealWithException(exception);
+                }
+            }
+        });
     }
 
     public int findTabWithName(String name) {
@@ -24,5 +38,4 @@ public class PadRow extends JTabbedPane {
         }
         return -1;
     }
-
 }

@@ -36,6 +36,7 @@ public class MainWindow extends JFrame {
         setSize(new Dimension(1000, 500));
         setLocationRelativeTo(null);
         setVisible(true);
+        this.getContentPane().setBackground(Color.BLACK);
         initializeMenuBar();
     }
 
@@ -54,16 +55,27 @@ public class MainWindow extends JFrame {
             centerNoteAndText.addNoteButton(note);
         }
         padRow.addTab(pad.getPadTitle(),centerNoteAndText);
+        try {
+            vm.selectPad(padRow.getTitleAt(padRow.getSelectedIndex()));
+        } catch (Exception e) {
+            dealWithException(e);
+        }
     }
 
     // EFFECTS:  deals with the exceptions
     public void dealWithException(Exception e) {
+        throw new RuntimeException(e);
+        /*
         if (e.getMessage() == null || e.getMessage().isEmpty()) {
             JOptionPane.showMessageDialog(this,"Invalid");
         } else {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
+
+         */
     }
+
+
 
 
 
