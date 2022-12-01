@@ -85,8 +85,10 @@ public class VimPad {
                 throw new ExistingTitleException("Title already exists");
             }
             getSelectedPad().addNote(new Note(input));
+            EventLog.getInstance().logEvent(new Event("Added Note[" + input + "]"));
         } else if (!isAlreadyInListOfPads(input)) {
             getListOfPad().add(new Pad(input));
+            EventLog.getInstance().logEvent(new Event("Added Pad[" + input + "]"));
         } else {
             throw new ExistingTitleException("Title already exists");
         }
@@ -128,6 +130,7 @@ public class VimPad {
                     this.selectedPad.removeNote(new Note(input));
                 }
             }
+            EventLog.getInstance().logEvent(new Event("Removed Note[" + input + "]"));
         } else {
             if (getSelectedPad() != null) {
                 if (getSelectedPad().getPadTitle().equals(input)) {
@@ -135,6 +138,7 @@ public class VimPad {
                 }
             }
             removePad(new Pad(input));
+            EventLog.getInstance().logEvent(new Event("Removed Pad[" + input + "]"));
         }
     }
 
@@ -216,6 +220,7 @@ public class VimPad {
         jsonWriter.open();
         jsonWriter.write(this.selectedPad);
         jsonWriter.close();
+        EventLog.getInstance().logEvent(new Event("Saved Pad[" + this.selectedPad.getPadTitle() + "]"));
     }
 
     // MODIFIES: this
@@ -225,6 +230,7 @@ public class VimPad {
         jsonWriter = new JsonWriter(jsonStore);
         jsonReader = new JsonReader(jsonStore);
         this.listOfPad.add(jsonReader.read());
+        EventLog.getInstance().logEvent(new Event("Loaded Pad[" + input + "]"));
     }
 
 

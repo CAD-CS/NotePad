@@ -1,11 +1,17 @@
 package ui;
 
+import model.Event;
+import model.EventLog;
 import model.Note;
 import model.Pad;
 import model.VimPad;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Iterator;
 
 // Responsible for creating the main window for the graphical user interface
 //
@@ -26,8 +32,28 @@ public class MainWindow extends JFrame {
     public void runMainWindow() {
         vm = new VimPad();
         initialize();
+        initializeWindowLog();
     }
 
+    private void initializeWindowLog() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                iterateOut();
+                super.windowClosing(e);
+            }
+        });
+    }
+
+
+
+    // EFFECTS: Uses iterator to iterate and print EventLog
+    private void iterateOut() {
+        for (Iterator<Event> it = EventLog.getInstance().iterator(); it.hasNext(); ) {
+            Event event = it.next();
+            System.out.println(event.toString());
+        }
+    }
 
     // MODIFIES: this
     // EFFECTS: initializes the main window, menu bar, and padRow
@@ -55,6 +81,7 @@ public class MainWindow extends JFrame {
             centerNoteAndText.addNoteButton(note);
         }
         padRow.addTab(pad.getPadTitle(),centerNoteAndText);
+        padRow.setSelectedIndex(padRow.findTabWithName(pad.getPadTitle()));
         try {
             vm.selectPad(padRow.getTitleAt(padRow.getSelectedIndex()));
         } catch (Exception e) {
@@ -65,14 +92,6 @@ public class MainWindow extends JFrame {
     // EFFECTS:  deals with the exceptions
     public void dealWithException(Exception e) {
         throw new RuntimeException(e);
-        /*
-        if (e.getMessage() == null || e.getMessage().isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Invalid");
-        } else {
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        }
-
-         */
     }
 
 

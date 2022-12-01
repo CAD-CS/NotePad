@@ -45,3 +45,11 @@ create dictionaries or grammar guides for myself.
 - You can locate my visual component by...
 - You can save the state of my application by...
 - You can reload the state of my application by...
+
+# Phase 4: Task 2 
+- Wed Nov 30 19:01:24 PST 2022 Loaded Pad [TESTPAD2]
+- Wed Nov 30 19:01:31 PST 2022 Saved Pad [TESTPAD2]
+- Wed Nov 30 19:01:39 PST 2022 Added Pad [TE]
+- Wed Nov 30 19:01:46 PST 2022 Added Note [T]
+- Wed Nov 30 19:01:50 PST 2022 Removed Note [T]
+- Wed Nov 30 19:01:55 PST 2022 Removed Pad [TE]

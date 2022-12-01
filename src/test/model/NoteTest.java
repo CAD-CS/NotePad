@@ -23,7 +23,7 @@ public class NoteTest {
 
     @Test
     public void testChangeNoteText() {
-        assertEquals(null , note.getText());
+        assertEquals("" , note.getText());
         note.changeNoteText("Test Text");
         assertEquals("Test Text" , note.getText());
     }

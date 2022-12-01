@@ -5,8 +5,7 @@ import model.VimPad;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 public class PadRow extends JTabbedPane {
 
@@ -21,9 +20,11 @@ public class PadRow extends JTabbedPane {
             @Override
             public void stateChanged(ChangeEvent e) {
                 try {
-                    vm.selectPad(getTitleAt(getSelectedIndex()));
-                } catch (Exception exception) {
-                    window.dealWithException(exception);
+                    if (getSelectedIndex() != -1) {
+                        vm.processMain("sp",getTitleAt(getSelectedIndex()));
+                    }
+                } catch (Exception exceptionx) {
+                    throw new RuntimeException(exceptionx);
                 }
             }
         });
@@ -33,7 +34,7 @@ public class PadRow extends JTabbedPane {
         int count = this.getTabCount();
         for (int i = 0;i < count;i++) {
             if (name.equals(getTitleAt(i))) {
-                return i;
+                return i++;
             }
         }
         return -1;
