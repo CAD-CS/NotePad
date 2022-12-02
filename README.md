@@ -40,11 +40,11 @@ create dictionaries or grammar guides for myself.
 
 # Instructions for Grader
 
-- You can generate the first required event related to adding Xs to a Y by...
-- You can generate the second required event related to adding Xs to a Y by...
-- You can locate my visual component by...
-- You can save the state of my application by...
-- You can reload the state of my application by...
+- You can generate the first required event related to adding Xs to a Y by pressing "Add new note" in the file menu
+- You can generate the second required event related to adding Xs to a Y by pressing "remove note" in the file menu
+- You can locate my visual component by the splash screen
+- You can save the state of my application by pressing save pad
+- You can reload the state of my application by pressing "open..."
 
 # Phase 4: Task 2 
 - Wed Nov 30 19:01:24 PST 2022 Loaded Pad [TESTPAD2]
@@ -53,3 +53,11 @@ create dictionaries or grammar guides for myself.
 - Wed Nov 30 19:01:46 PST 2022 Added Note [T]
 - Wed Nov 30 19:01:50 PST 2022 Removed Note [T]
 - Wed Nov 30 19:01:55 PST 2022 Removed Pad [TE]
+
+#  Phase 4: Task 3
+
+- The *VimPad* class is accessed by every UI element. Therefore, I will use the **Singleton** design for this class. 
+This way every element in the GUI can access the class with very little repetition since every GUI class  needs 
+to modify and know about it.
+- I would create an abstract class which both *Note* and *Pad* extend. I tend to have a lot of repetition between them 
+so this would greatly reduce the complexity between them. 
