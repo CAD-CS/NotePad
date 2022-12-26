@@ -1,79 +1,114 @@
 package model;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import exception.DoesNotExistException;
+import exception.ExistingTitleException;
+import exception.NotePadException;
 import persistence.Writable;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Objects;
 
-// Attribution[1]: toJson, notesToJson was modelled with respect to "JsonSerializationDemo"
-// Represents a pad containing a list of notes, and a title
+// Represents a Pad with a title, list of notes and a selected note 
 public class Pad implements Writable {
 
     private String padTitle;
-    private ArrayList<Note> listOfNotes;
+    private Set<Note> listOfNotes;
+    private Note selectedNote;
 
-    // MODIFIES: this
-    // EFFECTS: Creates a new pad with a title and an empty list of notes
     public Pad(String title) {
+        if (title.isBlank()) {
+            throw new NotePadException("Title cannot be empty");
+        }
         this.padTitle = title;
-        this.listOfNotes = new ArrayList<>();
+        this.listOfNotes = new HashSet<>();
+        this.selectedNote = null;
     }
 
     public String getPadTitle() {
         return this.padTitle;
     }
 
-    public ArrayList<Note> getListOfNotes() {
+    public Set<Note> getListOfNotes() {
         return this.listOfNotes;
     }
 
+    public Note getSelectedNote() {
+        return this.selectedNote;
+    }
 
-    // MODIFIES: this
-    // EFFECTS: changes the name of the pad title
     public void changePadTitle(String newTitle) {
+        if (newTitle.isBlank()) {
+            throw new NotePadException("Title cannot be empty");
+        }
         this.padTitle = newTitle;
     }
 
-    // REQUIRES: Cannot have the same title as any preexisting notes
-    // MODIFIES: this
-    // EFFECTS: Adds a note to the list of notes if not already there, if else not do anything
+    public void changeSelectedNoteTitle(String newTitle) {
+        checkNote();
+        if (this.listOfNotes.contains(new Note(newTitle))) {
+            throw new ExistingTitleException("This note already exists");
+        }
+        getSelectedNote().changeNoteTitle(newTitle);
+    }
+
+    public void changeSelectedNoteText(String newText) {
+        checkNote();
+        getSelectedNote().changeNoteText(newText);
+    }
+
+    // Important: Cannot have the same title as any preexisting notes else throws a
+    // runtime exception
     public void addNote(Note theNote) {
-
-        if (!isInPad(theNote, this.listOfNotes)) {
-            this.listOfNotes.add(theNote);
+        if (getListOfNotes().contains(theNote)) {
+            throw new ExistingTitleException("This Note already exists in this Pad");
         }
+        this.listOfNotes.add(theNote);
     }
 
-    // MODIFIES: this
-    // EFFECTS: removes a note to the list of notes if note already there, if else not do anything
+    // Important: Removes a note from the list of notes, if not found then throws a
+    // runtime exception
     public void removeNote(Note theNote) {
-        if (isInPad(theNote, this.listOfNotes)) {
-            this.listOfNotes.remove(theNote);
+        if (!getListOfNotes().contains(theNote)) {
+            throw new DoesNotExistException("This Note does not exist in this Pad");
         }
+        this.listOfNotes.remove(theNote);
     }
 
-    // EFFECTS: returns true if a note with the same name in the pad
-    private boolean isInPad(Note theNote, ArrayList<Note> lon) {
-        for (Note n : lon) {
-            if (n.equals(theNote)) {
-                return true;
+    // Important: Selects given note from list of notes else throws new runtime
+    // exception
+    public void selectNote(Note note) {
+        if (!getListOfNotes().contains(note) && note != null) {
+            throw new DoesNotExistException("This Note does not exist in this Pad");
+        } 
+        for (Note n : getListOfNotes()) {
+            if (n.equals(note)) {
+                this.selectedNote = n;
+                return;
             }
         }
-        return false;
+        this.selectedNote = null;
+    }
+
+    private void checkNote() {
+        if (this.selectedNote == null) {
+            throw new DoesNotExistException("Must select note");
+        }
+
     }
 
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("padTitle", this.padTitle);
+        json.put("padTitle", getPadTitle());
         json.put("listOfNotes", notesToJson());
+        json.put("selectedNote", getSelectedNote().toJson());
         return json;
     }
 
-    // EFFECTS: returns notes in this pad as a JSON array
     private JSONArray notesToJson() {
         JSONArray jsonArray = new JSONArray();
         for (Note n : this.listOfNotes) {
@@ -87,7 +122,7 @@ public class Pad implements Writable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Pad))  {
+        if (!(o instanceof Pad)) {
             return false;
         }
         Pad pad = (Pad) o;

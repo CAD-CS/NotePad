@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// Attribution[1]: JsonWriterTest was modelled off of the JsonWriterTest in "JsonSerializationDemo"
 public class JsonWriterTest {
     @Test
     public void invalidJsonWriterTest() {
@@ -36,9 +35,7 @@ public class JsonWriterTest {
             p = read.read();
             assertEquals("Test Pad" , p.getPadTitle());
             assertEquals(0 , p.getListOfNotes().size());
-
-
-
+            assertNull(p.getSelectedNote());
         } catch (IOException e) {
             fail("Test Failed");
         }
@@ -46,13 +43,14 @@ public class JsonWriterTest {
 
     @Test
     public void fullJsonReaderTest() {
-        JsonWriter write = new JsonWriter("./data/testWriteEmpty.json");
-        JsonReader read = new JsonReader("./data/testWriteEmpty.json");
+        JsonWriter write = new JsonWriter("./data/testWriteFull.json");
+        JsonReader read = new JsonReader("./data/testWriteFull.json");
         try {
             Pad p = new Pad("Test Pad");
             Note n = new Note("Test Note");
             n.changeNoteText("Success!");
             p.addNote(n);
+            p.selectNote(n);
             write.open();
             write.write(p);
             write.close();
@@ -60,9 +58,8 @@ public class JsonWriterTest {
             p = read.read();
             assertEquals("Test Pad" , p.getPadTitle());
             assertEquals(1 , p.getListOfNotes().size());
-            assertEquals("Success!" , p.getListOfNotes().get(0).getText());
-
-
+            assertEquals(n,p.getSelectedNote());
+            assertEquals("Success!", p.getSelectedNote().getText());
         } catch (IOException e) {
             fail("Test Failed");
         }

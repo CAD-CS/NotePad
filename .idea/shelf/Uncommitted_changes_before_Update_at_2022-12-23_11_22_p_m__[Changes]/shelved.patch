@@ -1,0 +1,15 @@
+Index: .idea/.name
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Project-Starter
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.name b/.idea/.name
+--- a/.idea/.name	(revision ab9990ad34a8e82c9c48a44064e69920bf7db75d)
++++ b/.idea/.name	(date 1671866436922)
+@@ -1,1 +1,1 @@
+-Project-Starter
+\ No newline at end of file
++config
+\ No newline at end of file

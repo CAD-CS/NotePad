@@ -1,4 +1,5 @@
 {
-  "padTitle": "Test Pad",
-  "listOfNotes": []
+    "padTitle" : "Test Pad",
+    "listOfNotes" : [],
+    "selectedNote" : null
 }

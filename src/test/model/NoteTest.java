@@ -3,6 +3,8 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import exception.NotePadException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteTest {
@@ -15,9 +17,17 @@ public class NoteTest {
     }
 
     @Test
+    public void constructorTest() {
+        try {
+            Note note2 = new Note("");
+            fail(); 
+        } catch (NotePadException exception) {
+            // Pass
+        }
+    }
+    @Test
     public void testChangeNoteTitle() {
         note.changeNoteTitle("Test");
-
         assertEquals("Test" , note.getNoteTitle());
     }
 

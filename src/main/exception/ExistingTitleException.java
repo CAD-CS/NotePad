@@ -1,8 +1,7 @@
 package exception;
 
-public class ExistingTitleException extends Exception {
-
-    public ExistingTitleException(String msg) {
-        super(msg);
+public class ExistingTitleException extends NotePadException {
+    public ExistingTitleException(String message) {
+        super(message);
     }
 }
