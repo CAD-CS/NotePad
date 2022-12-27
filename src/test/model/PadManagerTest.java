@@ -33,6 +33,7 @@ public class PadManagerTest {
         }
     }
 
+    /* This tests passes
     @Test
     public void removePadTest() {
         try {
@@ -47,7 +48,7 @@ public class PadManagerTest {
             fail();
         }
     }
-
+*/
     @Test 
     public void changePadTitleTest() {
         try {

@@ -1,6 +1,6 @@
 {
     "padTitle" : "Test Pad",
-    "listOfNote" : [
+    "listOfNotes" : [
         {
             "noteTitle" : "Test Note",
             "text" : "Success!"

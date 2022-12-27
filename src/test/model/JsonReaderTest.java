@@ -39,7 +39,7 @@ public class JsonReaderTest {
             Pad p = read.read();
             assertEquals("Test Pad", p.getPadTitle());
             assertEquals(1, p.getListOfNotes().size());
-            assertEquals(new Note("Test Note"), p.getSelectedNote());
+            assertEquals("Test Note", p.getSelectedNote().getNoteTitle());
         } catch (IOException e) {
             fail("Test failed");        }
     }

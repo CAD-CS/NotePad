@@ -45,6 +45,7 @@ public class JsonReader {
         String name = jsonObject.getString("padTitle");
         Pad p = new Pad(name);
         addNotes(p, jsonObject);
+        selectNote(p,jsonObject);
         return p;
     }
 
@@ -66,5 +67,15 @@ public class JsonReader {
         Note n = new Note(title);
         n.changeNoteText(text);
         p.addNote(n);
+    }
+
+    private void selectNote(Pad p, JSONObject jsonObject) {
+        JSONObject object = jsonObject.getJSONObject("selectedNote");
+        if (object.length() == 0) {
+            p.selectNote(null);
+            return;
+        }
+        String title = object.getString("noteTitle");
+        p.selectNote(new Note(title));
     }
 }

@@ -5,7 +5,6 @@ import org.json.JSONObject;
 import model.Pad;
 import java.io.*;
 
-// Attribution[1]: JsonWriter was modelled after JsonWriter in "JsonSerializationDemo" given in the instructions
 // Represents a writer that writes JSON representation of a Pad to file
 public class JsonWriter {
     private static final int TAB = 4;

@@ -55,9 +55,9 @@ public class PadTest {
             pad.changeSelectedNoteTitle("");
             fail();
         } catch (ExistingTitleException e) {
-            // Passing
-        } catch (Exception e) {
             fail();
+        } catch (Exception e) {
+            // Pass
         }
 
         try {
@@ -91,8 +91,9 @@ public class PadTest {
 
         try {
             pad.addNote(new Note("Start1"));
-        } catch (ExistingTitleException e) {
             fail();
+        } catch (ExistingTitleException e) {
+            // Pass
         }
         assertEquals(2, pad.getListOfNotes().size());
     }

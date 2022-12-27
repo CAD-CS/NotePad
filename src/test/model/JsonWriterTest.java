@@ -23,25 +23,6 @@ public class JsonWriterTest {
     }
 
     @Test
-    public void emptyJsonReaderTest() {
-        JsonWriter write = new JsonWriter("./data/testWriteEmpty.json");
-        JsonReader read = new JsonReader("./data/testWriteEmpty.json");
-        try {
-            Pad p = new Pad("Test Pad");
-            write.open();
-            write.write(p);
-            write.close();
-
-            p = read.read();
-            assertEquals("Test Pad" , p.getPadTitle());
-            assertEquals(0 , p.getListOfNotes().size());
-            assertNull(p.getSelectedNote());
-        } catch (IOException e) {
-            fail("Test Failed");
-        }
-    }
-
-    @Test
     public void fullJsonReaderTest() {
         JsonWriter write = new JsonWriter("./data/testWriteFull.json");
         JsonReader read = new JsonReader("./data/testWriteFull.json");
