@@ -12,6 +12,7 @@ public class TabOfPads extends JTabbedPane {
     }
 
     public void addPadToTab(Pad pad) {
-        this.addTab(pad.getPadTitle(), new NotesAndText(pad));
+        NotesAndText nat = new NotesAndText();
+        this.addTab(pad.getPadTitle(),nat);
     }
 }
