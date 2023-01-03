@@ -42,6 +42,19 @@ public class PadManager {
         return this.listOfPad;
     }
 
+    public Pad getPad(String name) {
+        Pad pad = new Pad(name);
+        if (!getListOfPad().contains(pad)) {
+            throw new DoesNotExistException("This Pad does not exist in the list of Pads");
+        }
+        for (Pad p : getListOfPad()) {
+            if (p.equals(pad)) {
+                return p;
+            }
+        }
+        return null;
+    }
+    
     // Important: exception thrown if pad already exists
     public void newPad(String input) {
         Pad p = new Pad(input);
@@ -56,10 +69,10 @@ public class PadManager {
         getSelectedPad().addNote(new Note(input));
     }
 
-    // Important: if cannot find pad then throw an exception
+    // Important: if you cannot find pad then throw an exception
     public void removePad(String input) {
         Pad p = new Pad(input);
-        if (!getListOfPad().contains(p)) {
+        if (!isInList(p)) {
             throw new DoesNotExistException("This Pad does not exist");
         }
         getListOfPad().remove(p);
@@ -68,11 +81,19 @@ public class PadManager {
         }
     }
 
+    private boolean isInList(Pad pad) {
+        for (Pad p : getListOfPad()) {
+            if (p.equals(pad)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removeNote(String input) {
         checkSelectedPad();
         getSelectedPad().removeNote(new Note(input));
     }
-
     
     public void changeNoteText(String input) {
         checkSelectedPad();
@@ -142,6 +163,7 @@ public class PadManager {
         jsonWriter = new JsonWriter(jsonStore);
         jsonReader = new JsonReader(jsonStore);
         this.listOfPad.add(jsonReader.read());
+        selectPad(input);
     }
 
 

@@ -72,10 +72,19 @@ public class Pad implements Writable {
     // Important: Removes a note from the list of notes, if not found then throws a
     // runtime exception
     public void removeNote(Note theNote) {
-        if (!getListOfNotes().contains(theNote)) {
+        if (!isInList(theNote)) {
             throw new DoesNotExistException("This Note does not exist in this Pad");
         }
         this.listOfNotes.remove(theNote);
+    }
+
+    private boolean isInList(Note note) {
+        for (Note n : getListOfNotes()) {
+            if (n.equals(note)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Important: Selects given note from list of notes else throws new runtime
@@ -83,7 +92,7 @@ public class Pad implements Writable {
     public void selectNote(Note note) {
         if (!getListOfNotes().contains(note) && note != null) {
             throw new DoesNotExistException("This Note does not exist in this Pad");
-        } 
+        }
         for (Note n : getListOfNotes()) {
             if (n.equals(note)) {
                 this.selectedNote = n;
@@ -122,9 +131,7 @@ public class Pad implements Writable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Pad)) {
-            return false;
-        }
+        if (!(o instanceof Pad)) return false;
         Pad pad = (Pad) o;
         return Objects.equals(getPadTitle(), pad.getPadTitle());
     }
@@ -133,5 +140,4 @@ public class Pad implements Writable {
     public int hashCode() {
         return Objects.hash(getPadTitle());
     }
-
 }

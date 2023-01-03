@@ -1,27 +1,77 @@
 package ui;
 
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
 import model.Note;
+import model.Pad;
+import model.PadManager;
 
-public class NotesAndText extends JPanel {
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
 
-    private Set<Note> listOfNote;
-    private JTextArea text;
+public class NotesAndText extends JTabbedPane {
 
     public NotesAndText() {
-        super(new BorderLayout());
-        this.listOfNote = new HashSet<>();
-        this.text = new JTextArea();
+        super(JTabbedPane.LEFT);
         initialize();
     }
 
     private void initialize() {
-        this.add(listOfNote, BorderLayout.WEST);
+        this.addChangeListener(e -> {
+            int index = getSelectedIndex();
+            if (index != -1) {
+                PadManager.getInstance().selectNote(getTitleAt(index));
+            }
+        });
+    }
+
+    public void convertPad(Pad pad) {
+        for (Note note : pad.getListOfNotes()) {
+            addNote(note);
+        }
+    }
+
+    public void addNote(Note note) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBackground(Color.BLACK);
+        textArea.setForeground(Color.WHITE);
+        textArea.setCaretColor(Color.WHITE);
+        textArea.setText(note.getText());
+        JScrollPane scroll  = new JScrollPane(textArea);
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                PadManager.getInstance().getSelectedPad().getSelectedNote().changeNoteText(textArea.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                PadManager.getInstance().getSelectedPad().getSelectedNote().changeNoteText(textArea.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // Do nothing
+            }
+        });
+        add(note.getNoteTitle(), scroll);
+    }
+
+    public void removeNote(Note note) {
+        removeTabAt(findNote(note.getNoteTitle()));
+    }
+
+    public void changeNote(String newName, String oldName) {
+        setTitleAt(findNote(oldName), newName);
+    }
+
+    private int findNote(String noteName) {
+        int count = getTabCount();
+        for (int i = 0; i <= count; i++) {
+            if (getTitleAt(i).equals(noteName)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

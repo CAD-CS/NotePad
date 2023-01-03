@@ -3,7 +3,6 @@ package ui;
 public class GUI {
 
     public GUI() {
-       new MainWindow(); 
+        new MainWindow();
     }
 }
-//  
